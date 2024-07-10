@@ -1,19 +1,41 @@
-import React, { useContext,  useState } from 'react'
-import { GameDataContext } from '../../providers/gameDataProvider'
+import React, { useContext, useState, useEffect } from 'react';
+import { GameDataContext } from '../../providers/gameDataProvider';
+import { useSocket } from '../../providers/socketContext';
+// Connect to your Socket.IO server
+
 const ChatBox = () => {
+    const socket = useSocket();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const { gameData } = useContext(GameDataContext);
-  
-    
+    const roomId = gameData.roomId; 
+
+    useEffect(() => {
+        console.log("Connecting to socket server...");
+        // Listen for incoming messages
+        socket.on('msg-recieve', (message) => {
+            console.log("Message received from server:", message);
+            setMessages((prevMessages) => [...prevMessages, message]);
+        });
+
+        // Cleanup on component unmount
+        return () => {
+            socket.off('msg-recieve');
+        };
+    }, [socket]);
+
     const handleSendMessage = () => {
         if (!newMessage.trim()) return;
-        setMessages([...messages, newMessage]);
+
+        console.log("Sending message to server:", newMessage);
+        // Emit the message to the server
+        socket.emit('sendMessage', { roomId, message: newMessage });
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
         setNewMessage('');
     };
 
     return (
-        <div className="bg-secondary-dark p-4 rounded-lg overflow-hidden">\
+        <div className="bg-secondary-dark p-4 rounded-lg overflow-hidden">
             <span className='text-white'>
                 Chat with {gameData.opponent.username} here
             </span>

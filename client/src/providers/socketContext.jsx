@@ -29,7 +29,7 @@ export const SocketProvider = ({ children }) => {
 
   // Render loading message if not connected or socket.id is undefined
   if (!isConnected || !socket || socket.id === undefined) {
-    return <div>Loading...</div>;
+      return <div>Loading...</div>;
   }
 
   return (

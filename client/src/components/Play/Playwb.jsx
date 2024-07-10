@@ -39,7 +39,7 @@ import { Chessboard } from "react-chessboard";
     
         // illegal move
         if (move === null) return false;
-        setTimeout(makeRandomMove, 200);
+        setTimeout(makeRandomMove,100);
         return true;
       }
   return (
